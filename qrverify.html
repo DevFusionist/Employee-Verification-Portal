@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Verification | GPay Business</title>
+    <link rel="icon" type="image/png" href="images/gpayBlogo.png">
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="QR Code Verification">
+    <meta property="og:description" content="GPay Business QR Code Verification">
+    <meta property="og:image" content="images/gpayBlogo.png">
+    <meta property="og:type" content="website">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/qr-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="qr-header">
+        <div class="header-content">
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Portal
+            </a>
+            <h1><i class="fas fa-qrcode"></i> QR Code Verification</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="qr-main">
+        <div class="qr-container">
+            <div class="qr-section">
+                <div class="qr-tabs">
+                    <button class="qr-tab active" data-tab="scanner">
+                        <i class="fas fa-camera"></i> Camera Scanner
+                    </button>
+                    <button class="qr-tab" data-tab="manual">
+                        <i class="fas fa-keyboard"></i> Manual Input
+                    </button>
+                </div>
+                
+                <!-- QR Scanner Tab -->
+                <div class="qr-tab-content active" id="scanner-tab">
+                    <div class="qr-scanner-container">
+                        <video id="qrVideo" class="qr-video" autoplay muted></video>
+                        <canvas id="qrCanvas" class="qr-canvas"></canvas>
+                        <div class="qr-overlay">
+                            <div class="qr-frame"></div>
+                            <div class="qr-instructions">
+                                <i class="fas fa-camera"></i>
+                                <p>Position QR code within the frame</p>
+                            </div>
+                        </div>
+                        <div class="qr-controls">
+                            <button id="startScanner" class="qr-btn primary">
+                                <i class="fas fa-play"></i> Start Scanner
+                            </button>
+                            <button id="stopScanner" class="qr-btn secondary" style="display: none;">
+                                <i class="fas fa-stop"></i> Stop Scanner
+                            </button>
+                            <button id="switchCamera" class="qr-btn secondary">
+                                <i class="fas fa-sync"></i> Switch Camera
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Manual Input Tab -->
+                <div class="qr-tab-content" id="manual-tab">
+                    <div class="qr-manual-input">
+                        <textarea id="qrManualInput" placeholder="Paste QR code data or scan result here..." class="qr-textarea"></textarea>
+                        <button id="verifyQrData" class="qr-btn primary">
+                            <i class="fas fa-check"></i> Verify QR Data
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="qrStatus" class="qr-status"></div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-container" id="resultsContainer" style="display: none;">
+            <div class="result-card">
+                <h3><i class="fas fa-id-card"></i> Agent Information</h3>
+                <div id="agentInfo" class="agent-info">
+                    <!-- Agent information will be displayed here -->
+                </div>
+                <div class="result-actions">
+                    <button id="verifyAgent" class="qr-btn primary">
+                        <i class="fas fa-search"></i> Verify Agent
+                    </button>
+                    <button id="clearResults" class="qr-btn secondary">
+                        <i class="fas fa-times"></i> Clear Results
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        Want To Become A Google Pay Agent?
+        <p><a href="https://forms.gle/Re2bfButfPrmNuCP8">Apply Now</a></p>
+        <div class="social-icons">
+            <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.merchant&hl=en_IN"><i class="fa-brands fa-google-pay"></i></a>
+            <a href="#"><i class="fa-solid fa-location-dot"></i></a>
+            <a href="index.html"><i class="fa-solid fa-home"></i></a>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="js/qr-script.js"></script>
+</body>
+</html> 
