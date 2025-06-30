@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Verification Portal | GPay Business</title>
+    <link rel="icon" type="image/png" href="images/gpayBlogo.png">
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Agent Verification Portal">
+    <meta property="og:description" content="GPay Business">
+    <meta property="og:image" content="images/gpayBlogo.png">
+    <meta property="og:type" content="website">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Employee Verification Portal</h1>
+            <p>Verify Agent details seamlessly and securely.</p>
+            <div class="search-container">
+                <input type="text" id="agentSearch" placeholder="Enter Agent Code (Numbers Only)" class="search-input">
+                <button id="searchBtn" class="search-btn">Search</button>
+                <button id="clearBtn" class="clear-btn" title="Clear Search"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <!-- Image Upload Section -->
+            <div class="upload-container">
+                <div class="upload-section">
+                    <h3>Upload Image to ID Cards Directory</h3>
+                    <form action="upload.php" method="POST" enctype="multipart/form-data" id="uploadForm">
+                        <div class="upload-input-group">
+                            <input type="file" id="imageUpload" name="imageFile" accept="image/*" class="file-input" style="display: none;">
+                            <label for="imageUpload" class="file-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                Choose Image
+                            </label>
+                            <button type="submit" id="uploadBtn" class="upload-btn">Upload</button>
+                        </div>
+                        
+                        <!-- Drag and Drop Zone -->
+                        <div id="dragDropZone" class="drag-drop-zone">
+                            <div class="drag-drop-content">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <h4>Drag & Drop Image Here</h4>
+                                <p>or click to browse</p>
+                                <span class="drag-drop-hint">Supports: JPG, PNG, WEBP</span>
+                            </div>
+                        </div>
+                        
+                        <div id="uploadPreview" class="upload-preview"></div>
+                        <div id="uploadStatus" class="upload-status"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main>
+        <section class="intro">
+            <h2>Agent ID Card</h2>
+            <div id="loading" class="loading-spinner" style="display: none;"></div>
+            <img id="agentImage" alt="Agent ID Card" class="responsive-image" src="./Housekeeping-Employee-ID-Card-Template-edit-online.webp">
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        Want To Become A Google Pay Agent?
+        <p><a href="https://forms.gle/Re2bfButfPrmNuCP8">Apply Now</a></p>
+        <div class="social-icons">
+            <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.merchant&hl=en_IN"><i class="fa-brands fa-google-pay"></i></a>
+            <a href="#"><i class="fa-solid fa-location-dot"></i></a>
+            <a href="/qrverify"><i class="fa-solid fa-qrcode"></i></a>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+</body>
+</html> 
