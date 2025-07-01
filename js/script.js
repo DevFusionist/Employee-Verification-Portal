@@ -174,14 +174,7 @@ function searchAgent() {
     return;
   }
 
-  if (!isValidNumber(agentCode)) {
-    showNotification('Please enter only numbers', 'error');
-    searchInput.value = '';
-    searchInput.focus();
-    searchInput.classList.add('error-shake');
-    setTimeout(() => searchInput.classList.remove('error-shake'), 500);
-    return;
-  }
+  // Removed number-only validation to allow alphanumeric input
 
   // Update URL parameters
   updateURLParameter('AuthCode', agentCode);
@@ -459,33 +452,6 @@ document.addEventListener("DOMContentLoaded", function () {
   searchInput.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
       searchAgent();
-    }
-  });
-
-  // Input validation - only allow numbers with enhanced feedback
-  searchInput.addEventListener('input', function (e) {
-    const value = e.target.value;
-    const numericValue = value.replace(/[^0-9]/g, '');
-    if (value !== numericValue) {
-      e.target.value = numericValue;
-      e.target.classList.add('error-shake');
-      setTimeout(() => e.target.classList.remove('error-shake'), 500);
-    }
-  });
-
-  // Prevent paste of non-numeric content
-  searchInput.addEventListener('paste', function (e) {
-    e.preventDefault();
-    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-    const numericText = pastedText.replace(/[^0-9]/g, '');
-    if (numericText) {
-      const currentValue = e.target.value;
-      const start = e.target.selectionStart;
-      const end = e.target.selectionEnd;
-      e.target.value = currentValue.substring(0, start) + numericText + currentValue.substring(end);
-      e.target.setSelectionRange(start + numericText.length, start + numericText.length);
-    } else {
-      showNotification('Only numbers are allowed', 'error');
     }
   });
 
