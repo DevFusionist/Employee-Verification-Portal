@@ -197,6 +197,9 @@ class QRScanner {
 
   processQRData(data) {
     try {
+      // Store the original raw data for display
+      this.rawQRData = data;
+
       // Try to parse as JSON first
       let qrData;
       try {
@@ -240,6 +243,20 @@ class QRScanner {
                 ${qrData.location ? `<div class="detail-row"><strong>Location:</strong> <span>${qrData.location}</span></div>` : ''}
                 ${qrData.validFrom ? `<div class="detail-row"><strong>Valid From:</strong> <span>${qrData.validFrom}</span></div>` : ''}
                 ${qrData.validUntil ? `<div class="detail-row"><strong>Valid Until:</strong> <span>${qrData.validUntil}</span></div>` : ''}
+            </div>
+            
+            <div class="qr-raw-data">
+                <h4><i class="fas fa-code"></i> Raw QR Code Data (for debugging):</h4>
+                <div class="raw-data-content">
+                    <pre>${this.rawQRData}</pre>
+                </div>
+            </div>
+            
+            <div class="qr-raw-data">
+                <h4><i class="fas fa-json"></i> Parsed JSON Data:</h4>
+                <div class="raw-data-content">
+                    <pre>${JSON.stringify(qrData, null, 2)}</pre>
+                </div>
             </div>
         `;
 
@@ -305,6 +322,7 @@ class QRScanner {
     this.resultsContainer.style.display = 'none';
     this.agentInfo.innerHTML = '';
     this.currentAgentCode = null;
+    this.rawQRData = null;
     this.manualInput.value = '';
     this.showStatus('Results cleared.', 'info');
   }
