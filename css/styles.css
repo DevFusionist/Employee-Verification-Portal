@@ -441,14 +441,20 @@ footer a:hover::after {
   .intro {
     margin: 20px 10px;
     padding: 30px 20px;
+    text-align: center;
   }
   h2 {
     font-size: 2rem;
+    margin-bottom: 25px;
   }
   .responsive-image {
-    width: 300px;
+    width: 100%;
+    max-width: 350px;
     height: auto;
-    max-width: 95%;
+    display: block;
+    margin: 0 auto;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   }
   .social-icons a {
     font-size: 1.5rem;
@@ -456,269 +462,32 @@ footer a:hover::after {
   }
 }
 
-/* Upload Section Styles */
-.upload-container {
-  margin-top: 30px;
-  animation: fadeInUp 1s ease-out 0.9s both;
-}
-
-.upload-section {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 25px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.upload-section h3 {
-  color: white;
-  margin: 0 0 20px 0;
-  font-size: 1.3rem;
-  text-align: center;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.upload-input-group {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-/* Drag and Drop Zone Styles */
-.drag-drop-zone {
-  border: 3px dashed rgba(255, 255, 255, 0.4);
-  border-radius: 15px;
-  padding: 40px 20px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  margin: 20px 0;
-  position: relative;
-  overflow: hidden;
-}
-
-.drag-drop-zone:hover {
-  border-color: rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-}
-
-.drag-drop-zone.drag-over {
-  border-color: #4caf50;
-  background: rgba(76, 175, 80, 0.1);
-  transform: scale(1.02);
-  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-}
-
-.drag-drop-zone.drag-over::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(76, 175, 80, 0.1),
-    transparent
-  );
-  animation: shimmer 1.5s ease-in-out infinite;
-}
-
-.drag-drop-content {
-  color: white;
-  pointer-events: none;
-}
-
-.drag-drop-content i {
-  font-size: 3rem;
-  margin-bottom: 15px;
-  display: block;
-  color: rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
-}
-
-.drag-drop-zone:hover .drag-drop-content i {
-  color: white;
-  transform: scale(1.1);
-}
-
-.drag-drop-content h4 {
-  margin: 0 0 10px 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.drag-drop-content p {
-  margin: 0 0 15px 0;
-  font-size: 1rem;
-  opacity: 0.9;
-}
-
-.drag-drop-hint {
-  display: block;
-  font-size: 0.85rem;
-  opacity: 0.7;
-  font-style: italic;
-  margin-top: 10px;
-}
-
-.drag-drop-zone.drag-over .drag-drop-content i {
-  color: #4caf50;
-  transform: scale(1.2);
-}
-
-.drag-drop-zone.drag-over .drag-drop-content h4 {
-  color: #4caf50;
-}
-
-.file-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 25px;
-  background: linear-gradient(45deg, #4caf50, #45a049);
-  color: white;
-  border-radius: 50px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border: 2px solid transparent;
-}
-
-.file-label:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(45deg, #45a049, #4caf50);
-}
-
-.file-label:active {
-  transform: translateY(0);
-}
-
-.file-label i {
-  font-size: 1.2rem;
-}
-
-.upload-btn {
-  padding: 12px 30px;
-  background: linear-gradient(45deg, #2196f3, #1976d2);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border: 2px solid transparent;
-}
-
-.upload-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(45deg, #1976d2, #2196f3);
-}
-
-.upload-btn:active {
-  transform: translateY(0);
-}
-
-.upload-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.upload-preview {
-  margin-top: 20px;
-  text-align: center;
-}
-
-.upload-preview img {
-  width: 200px;
-  height: 125px;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.upload-status {
-  margin-top: 15px;
-  text-align: center;
-  font-weight: 600;
-  min-height: 20px;
-}
-
-.upload-status.success {
-  color: #4caf50;
-}
-
-.upload-status.error {
-  color: #f44336;
-}
-
-.upload-status.info {
-  color: #2196f3;
-}
-
-/* Mobile Responsive for Upload */
-@media (max-width: 768px) {
-  .upload-input-group {
-    flex-direction: column;
-    gap: 10px;
+/* Extra small devices */
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 2rem;
   }
-
-  .file-label {
-    display: none; /* Hide "Choose Image" button on mobile */
+  .hero p {
+    font-size: 1rem;
   }
-
-  .upload-btn {
-    width: 100%;
-    max-width: 200px; /* Limit width to prevent overflow */
-    margin: 0 auto; /* Center the button */
-    justify-content: center;
-    padding: 15px 25px; /* Slightly larger padding for better touch */
+  .search-input {
+    width: 250px;
+    padding: 10px 15px;
+    font-size: 14px;
   }
-
-  .upload-section {
-    padding: 20px 15px; /* Reduce horizontal padding */
-    margin: 0 10px; /* Add margin to prevent edge overflow */
+  .search-btn {
+    padding: 10px 20px;
+    font-size: 14px;
   }
-
-  .drag-drop-zone {
-    padding: 30px 15px;
-    margin: 15px 0;
+  .intro {
+    margin: 15px 5px;
+    padding: 20px 15px;
   }
-
-  .drag-drop-content i {
-    font-size: 2.5rem;
+  h2 {
+    font-size: 1.8rem;
   }
-
-  .drag-drop-content h4 {
-    font-size: 1.1rem;
-  }
-
-  .drag-drop-content p {
-    font-size: 0.9rem;
-  }
-
-  .drag-drop-hint {
-    font-size: 0.8rem;
-  }
-
-  .upload-preview img {
-    width: 150px;
-    height: 94px;
+  .responsive-image {
+    max-width: 300px;
   }
 }
 
