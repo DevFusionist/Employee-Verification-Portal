@@ -172,7 +172,7 @@ class QRScanner {
     }
   }
 
-  handleQRResult(data) {
+  async handleQRResult(data) {
     this.stopScanner();
     this.showStatus('QR code detected!', 'success');
 
@@ -181,10 +181,10 @@ class QRScanner {
     setTimeout(() => this.video.classList.remove('qr-success'), 600);
 
     // Process the QR data
-    this.processQRData(data);
+    await this.processQRData(data);
   }
 
-  verifyManualInput() {
+  async verifyManualInput() {
     const data = this.manualInput.value.trim();
 
     if (!data) {
@@ -192,38 +192,60 @@ class QRScanner {
       return;
     }
 
-    this.processQRData(data);
+    await this.processQRData(data);
   }
 
-  processQRData(data) {
+  async processQRData(data) {
     try {
+      console.log("data", data);
       // Store the original raw data for display
       this.rawQRData = data;
 
-      // Try to parse as JSON first
-      let qrData;
-      try {
-        qrData = JSON.parse(data);
-      } catch {
-        // If not JSON, treat as plain text (agent code)
-        qrData = { agentCode: data };
+      // Check if the data is a URL
+      if (this.isValidUrl(data)) {
+        this.showStatus('Detected URL in QR code. Fetching data...', 'info');
+        try {
+          const response = await fetch(data);
+          if (response.ok) {
+            const urlData = await response.text();
+            console.log("URL data fetched:", urlData);
+
+            // Try to parse the fetched data as JSON
+            try {
+              const parsedData = JSON.parse(urlData);
+              this.processParsedData(parsedData);
+            } catch {
+              // If not JSON, try to extract agent code from URL path
+              const agentCode = this.extractAgentCodeFromUrl(data);
+              if (agentCode) {
+                this.showStatus('Extracted agent code from URL path.', 'info');
+                this.processParsedData({ agentCode: agentCode });
+              } else {
+                // If no agent code found in URL, show error
+                this.showStatus('Invalid QR code data. URL does not contain valid agent information.', 'error');
+                this.showInvalidQRData(data);
+              }
+            }
+          } else {
+            throw new Error('Failed to fetch URL data');
+          }
+        } catch (fetchError) {
+          console.error('Error fetching URL data:', fetchError);
+          this.showStatus('Failed to fetch data from URL. Trying to extract agent code from URL...', 'warning');
+
+          // Try to extract agent code from URL path even if fetch fails
+          const agentCode = this.extractAgentCodeFromUrl(data);
+          if (agentCode) {
+            this.showStatus('Extracted agent code from URL path.', 'info');
+            this.processParsedData({ agentCode: agentCode });
+          } else {
+            this.processDirectData(data);
+          }
+        }
+      } else {
+        // Process direct data (not a URL)
+        this.processDirectData(data);
       }
-
-      // Extract agent code
-      const agentCode = qrData.agentCode || qrData.code || qrData.id || data;
-
-      if (!agentCode) {
-        this.showStatus('Invalid QR code data. No agent code found.', 'error');
-        return;
-      }
-
-      // Validate agent code (should be numbers only)
-      if (!/^\d+$/.test(agentCode)) {
-        this.showStatus('Invalid agent code. Please use numbers only.', 'error');
-        return;
-      }
-
-      this.showAgentInfo(agentCode, qrData);
 
     } catch (error) {
       console.error('Error processing QR data:', error);
@@ -231,34 +253,137 @@ class QRScanner {
     }
   }
 
-  showAgentInfo(agentCode, qrData) {
+  isValidUrl(string) {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  extractAgentCodeFromUrl(urlString) {
+    try {
+      const url = new URL(urlString);
+      const pathname = url.pathname;
+
+      // Extract the last part of the path (after the last slash)
+      const pathParts = pathname.split('/').filter(part => part.length > 0);
+      if (pathParts.length > 0) {
+        const lastPart = pathParts[pathParts.length - 1];
+
+        // Validate that it looks like an agent code (alphanumeric, reasonable length)
+        if (lastPart && /^[a-zA-Z0-9]{4,20}$/.test(lastPart)) {
+          return lastPart;
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error extracting agent code from URL:', error);
+      return null;
+    }
+  }
+
+
+
+  showInvalidQRData(originalData) {
+    // Create a display for invalid QR data
+    let infoHTML = `
+      <div class="scanned-data-section">
+        <h3><i class="fas fa-exclamation-triangle"></i> Invalid QR Code Data</h3>
+        <div class="scanned-data-display">
+          <div class="data-type-badge error">
+            <i class="fas fa-exclamation-circle"></i> Invalid Data
+          </div>
+          <div class="scanned-content">
+            <p><strong>QR Code Content:</strong></p>
+            <pre>${originalData}</pre>
+          </div>
+          <div class="error-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Issue:</strong> This QR code contains a URL that doesn't provide valid agent information.
+            Please ensure the QR code contains a valid agent code or agent data.
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.agentInfo.innerHTML = infoHTML;
+    this.resultsContainer.style.display = 'block';
+    this.currentAgentCode = null;
+  }
+
+  processDirectData(data) {
+    // Try to parse as JSON first
+    let qrData;
+    try {
+      qrData = JSON.parse(data);
+    } catch {
+      // If not JSON, treat as plain text (agent code)
+      qrData = { agentCode: data };
+    }
+
+    console.log("qrData", qrData);
+    this.processParsedData(qrData);
+  }
+
+  processParsedData(qrData) {
+    // Extract agent code
+    const agentCode = qrData.agentCode || qrData.code || qrData.id || this.rawQRData;
+
+    if (!agentCode) {
+      this.showStatus('Invalid QR code data. No agent code found.', 'error');
+      return;
+    }
+
+    // Validate agent code format (should be reasonable length and format)
+    if (typeof agentCode === 'string' && agentCode.length > 50) {
+      this.showStatus('Invalid agent code format. Code is too long.', 'error');
+      this.showInvalidQRData(this.rawQRData, agentCode);
+      return;
+    }
+
+    // Check if agent code contains HTML tags (indicating it's HTML content)
+    if (typeof agentCode === 'string' && (agentCode.includes('<') && agentCode.includes('>'))) {
+      this.showStatus('Invalid agent code. Contains HTML content.', 'error');
+      this.showInvalidQRData(this.rawQRData, agentCode);
+      return;
+    }
+
+    this.showAgentInfo(agentCode, qrData);
+  }
+
+  async showAgentInfo(agentCode, qrData) {
+    console.log("qrData", qrData, "agentCode", agentCode);
+
+    // Check if agent image exists
+    const imageExists = await this.checkAgentImage(agentCode);
+
     // Create agent info display
-    const infoHTML = `
-            <div class="agent-details">
-                <div class="detail-row">
-                    <strong>Agent Code:</strong> <span>${agentCode}</span>
-                </div>
-                ${qrData.name ? `<div class="detail-row"><strong>Name:</strong> <span>${qrData.name}</span></div>` : ''}
-                ${qrData.department ? `<div class="detail-row"><strong>Department:</strong> <span>${qrData.department}</span></div>` : ''}
-                ${qrData.location ? `<div class="detail-row"><strong>Location:</strong> <span>${qrData.location}</span></div>` : ''}
-                ${qrData.validFrom ? `<div class="detail-row"><strong>Valid From:</strong> <span>${qrData.validFrom}</span></div>` : ''}
-                ${qrData.validUntil ? `<div class="detail-row"><strong>Valid Until:</strong> <span>${qrData.validUntil}</span></div>` : ''}
-            </div>
-            
-            <div class="qr-raw-data">
-                <h4><i class="fas fa-code"></i> Raw QR Code Data (for debugging):</h4>
-                <div class="raw-data-content">
-                    <pre>${this.rawQRData}</pre>
-                </div>
-            </div>
-            
-            <div class="qr-raw-data">
-                <h4><i class="fas fa-json"></i> Parsed JSON Data:</h4>
-                <div class="raw-data-content">
-                    <pre>${JSON.stringify(qrData, null, 2)}</pre>
+    let infoHTML = '';
+
+    // Add agent image or error message
+    if (imageExists) {
+      infoHTML += `
+            <div class="agent-image-section">
+                <h3><i class="fas fa-user"></i> Agent ID Card</h3>
+                <div class="agent-image-container">
+                    <img id="agentImage" src="" alt="Agent ID Card" style="width: 400px; height: auto; max-width: 95%; object-fit: cover; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: block; margin: 0 auto;">
                 </div>
             </div>
         `;
+    } else {
+      infoHTML += `
+            <div class="agent-not-found-section">
+                <div class="error-content">
+                    <i class="fas fa-user-slash"></i>
+                    <h3>Agent Not Found</h3>
+                    <p>Agent with ID <strong>${agentCode}</strong> is not found.</p>
+                </div>
+            </div>
+        `;
+    }
 
     this.agentInfo.innerHTML = infoHTML;
     this.resultsContainer.style.display = 'block';
@@ -266,7 +391,13 @@ class QRScanner {
     // Store agent code for verification
     this.currentAgentCode = agentCode;
 
-    this.showStatus('Agent information extracted successfully!', 'success');
+    // Load agent image if it exists
+    if (imageExists) {
+      this.loadAgentImage(agentCode);
+      this.showStatus('Agent found successfully!', 'success');
+    } else {
+      this.showStatus('Agent with this ID is not found.', 'error');
+    }
   }
 
   async verifyAgent() {
@@ -316,6 +447,42 @@ class QRScanner {
     }
 
     return false;
+  }
+
+  loadAgentImage(agentCode) {
+    const agentImage = document.getElementById('agentImage');
+    if (!agentImage) return;
+
+    const extensions = ['jpg', 'jpeg', 'png', 'webp'];
+    let currentIndex = 0;
+
+    function tryNextExtension() {
+      if (currentIndex >= extensions.length) {
+        // All extensions failed
+        console.error('Failed to load agent image with any extension');
+        return;
+      }
+
+      const extension = extensions[currentIndex];
+      agentImage.src = `idcards/${agentCode}.${extension}`;
+      currentIndex++;
+    }
+
+    // Set up error handler
+    agentImage.onerror = function () {
+      // Try next extension
+      tryNextExtension();
+    };
+
+    // Set up success handler
+    agentImage.onload = function () {
+      // Add success animation
+      this.classList.add('success-bounce');
+      setTimeout(() => this.classList.remove('success-bounce'), 600);
+    };
+
+    // Start with first extension
+    tryNextExtension();
   }
 
   clearResults() {
