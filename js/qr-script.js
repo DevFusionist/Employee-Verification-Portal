@@ -203,44 +203,18 @@ class QRScanner {
 
       // Check if the data is a URL
       if (this.isValidUrl(data)) {
-        this.showStatus('Detected URL in QR code. Fetching data...', 'info');
-        try {
-          const response = await fetch(data);
-          if (response.ok) {
-            const urlData = await response.text();
-            console.log("URL data fetched:", urlData);
+        this.showStatus('Detected URL in QR code. Extracting AuthCode...', 'info');
 
-            // Try to parse the fetched data as JSON
-            try {
-              const parsedData = JSON.parse(urlData);
-              this.processParsedData(parsedData);
-            } catch {
-              // If not JSON, try to extract agent code from URL path
-              const agentCode = this.extractAgentCodeFromUrl(data);
-              if (agentCode) {
-                this.showStatus('Extracted agent code from URL path.', 'info');
-                this.processParsedData({ agentCode: agentCode });
-              } else {
-                // If no agent code found in URL, show error
-                this.showStatus('Invalid QR code data. URL does not contain valid agent information.', 'error');
-                this.showInvalidQRData(data);
-              }
-            }
-          } else {
-            throw new Error('Failed to fetch URL data');
-          }
-        } catch (fetchError) {
-          console.error('Error fetching URL data:', fetchError);
-          this.showStatus('Failed to fetch data from URL. Trying to extract agent code from URL...', 'warning');
+        // Extract AuthCode from URL using regex
+        const authCode = this.extractAuthCodeFromUrl(data);
 
-          // Try to extract agent code from URL path even if fetch fails
-          const agentCode = this.extractAgentCodeFromUrl(data);
-          if (agentCode) {
-            this.showStatus('Extracted agent code from URL path.', 'info');
-            this.processParsedData({ agentCode: agentCode });
-          } else {
-            this.processDirectData(data);
-          }
+        if (authCode) {
+          this.showStatus('AuthCode extracted successfully.', 'info');
+          this.processParsedData({ agentCode: authCode });
+        } else {
+          // If no AuthCode found in URL, show error
+          this.showStatus('Invalid QR code data. URL does not contain valid AuthCode.', 'error');
+          this.showInvalidQRData(data);
         }
       } else {
         // Process direct data (not a URL)
@@ -259,6 +233,26 @@ class QRScanner {
       return true;
     } catch (_) {
       return false;
+    }
+  }
+
+  extractAuthCodeFromUrl(urlString) {
+    try {
+      // Use regex to extract AuthCode from URL parameters
+      const authCodeMatch = urlString.match(/[?&]AuthCode=([^&]+)/);
+      if (authCodeMatch && authCodeMatch[1]) {
+        const authCode = authCodeMatch[1];
+
+        // Validate that it looks like an agent code (alphanumeric, reasonable length)
+        if (authCode && /^[a-zA-Z0-9]{4,20}$/.test(authCode)) {
+          return authCode;
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error extracting AuthCode from URL:', error);
+      return null;
     }
   }
 
