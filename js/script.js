@@ -258,17 +258,8 @@ document.addEventListener("DOMContentLoaded", function () {
   addTypingEffect();
   createParticles();
 
-  // Check for URL parameter first
-  const agentCode = getQueryParam("AuthCode");
-
-  if (agentCode) {
-    searchInput.value = agentCode;
-    loadingSpinner.style.display = "block";
-    loadImageWithFallback(agentCode, agentImage, loadingSpinner, searchBtn);
-  } else {
-    // Set default image directly to the working image
-    agentImage.style.display = 'block';
-  }
+  // Set default image first
+  agentImage.style.display = 'block';
 
   // Image load event handlers with enhanced animations
   agentImage.onload = function () {
@@ -479,6 +470,17 @@ document.addEventListener("DOMContentLoaded", function () {
     icon.style.animation = 'fadeInUp 0.6s ease-out both';
   });
 
+  // Check for URL parameter after all event handlers are set up
+  const agentCode = getQueryParam("AuthCode");
+  if (agentCode) {
+    searchInput.value = agentCode;
+    loadingSpinner.style.display = "block";
+    // Update button state to show searching
+    searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+    searchBtn.disabled = true;
+    // Automatically search for the agent
+    loadImageWithFallback(agentCode, agentImage, loadingSpinner, searchBtn);
+  }
 
 });
 
